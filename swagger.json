@@ -1,0 +1,1518 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Vehicle Parking Storage System",
+        "description": "Vehicle Parking Storage System",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "host": "192.168.0.16:3000",
+    "basePath": "/api/v1",
+    "tags": [
+        {
+            "name": "User",
+            "description": "API for users in the system"
+        },
+        {
+            "name": "Parking Lot",
+            "description": "API for Operations of Parkinglot"
+        },
+        {
+            "name": "Employee",
+            "description": "API for Operations of Employee"
+        },
+        {
+            "name": "Floor",
+            "description": "API for Operations of Floor Area"
+        },
+        {
+            "name": "Service",
+            "description": "API for Operations of Services provided with package"
+        },
+        {
+            "name": "Package",
+            "description": "API for Operations of Packages provided to user"
+        },
+        {
+            "name": "Customer",
+            "description": "API for Operations of Customer"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/user": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Get User Details",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User Data Found"
+                    },
+                    "404": {
+                        "description": "Incorect Request! / Data Not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Login User",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Login Existing User",
+                        "schema": {
+                            "required": [
+                                "email",
+                                "password"
+                            ],
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "employee1@mt.com"
+
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "U2FsdGVkX1+ZkeYjYVaeAISWpDjmvuD4HKRf996jWvU="
+
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login Success"
+                    },
+                    "401": {
+                        "description": "Email/Password Incorrect!"
+                    },
+                    "403": {
+                        "description": "Access Forbidden (User Removed By Admin)"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/user/forgotPassword": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Used to generate reset password link, if user exist",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Generate Reset Link",
+                        "schema": {
+                            "required": [
+                                "email"
+                            ],
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "employee1@mt.com"
+
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Link Sent Success"
+                    },
+                    "401": {
+                        "description": "Email Incorrect!"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/user/resetRequestValidate": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Used to validate expiry of generated link",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Link Verified Success"
+                    },
+                    "404": {
+                        "description": "Incorect Request!"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/user/resetPassword": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Reset User Password if link validation success",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Reset User Password",
+                        "schema": {
+                            "required": [
+                                "password"
+                            ],
+                            "properties": {
+                                "password": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "U2FsdGVkX1+ZkeYjYVaeAISWpDjmvuD4HKRf996jWvU="
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Link Verified Success"
+                    },
+                    "400": {
+                        "description": "Incorrect Value of Params!"
+                    },
+                    "404": {
+                        "description": "Incorect Request!"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/user/changePassword": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Change User Password if current password validation success",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Change User Password",
+                        "schema": {
+                            "required": [
+                                "currentPassword",
+                                "password"
+                            ],
+                            "properties": {
+                                "currentPassword": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "U2FsdGVkX1+iP/qsnEp1gO/8n6YGh/gjmULKmaAs7C8="
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "U2FsdGVkX1+iP/qsnEp1gO/8n6YGh/gjmULKmaAs7C8="
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password Changed Success"
+                    },
+                    "400": {
+                        "description": "Incorrect Value of Params!"
+                    },
+                    "403": {
+                        "description": "Current Password invalid"
+                    },
+                    "404": {
+                        "description": "Incorect Request!"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/user/dashboardAnalytics": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Get detail of Dashboard",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dashboard Analytics"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/employee": {
+            "post": {
+                "tags": [
+                    "Employee"
+                ],
+                "description": "Create New Employee Login",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "Employee",
+                        "in": "body",
+                        "description": "User that we want to create",
+                        "schema": {
+                            "required": [
+                                "email",
+                                "password",
+                                "role",
+                                "name",
+                                "designation",
+                                "mobileNumber"
+                            ],
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "employee1@mt.com"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "U2FsdGVkX1+ZkeYjYVaeAISWpDjmvuD4HKRf996jWvU="
+                                },
+                                "role": {
+                                    "type": "string",
+                                    "example" : "Employee"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Employee 101"
+                                },
+                                "designation": {
+                                    "type": "string",
+                                    "example" : "Manager"
+                                },
+                                "mobileNumber": {
+                                    "type": "string",
+                                    "example" : "+919090909090"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "New Employee Login is created"
+                    },
+                    "409": {
+                        "description": "User Already Exist"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "description": "Get List of Employee",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Employee"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/employee/{employeeId}": {
+            "patch": {
+                "tags": [
+                    "Employee"
+                ],
+                "description": "Update Employee Data",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "employeeId",
+                        "in": "path",
+                        "description": "ID of employee that needs to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Employee",
+                        "in": "body",
+                        "description": "Employee that we want to update",
+                        "schema": {
+                            "required": [
+                                "name",
+                                "designation",
+                                "mobileNumber"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Employee 1"
+                                },
+                                "designation": {
+                                    "type": "string",
+                                    "example" : "Sales Manager"
+                                },
+                                "mobileNumber": {
+                                    "type": "string",
+                                    "example" : "+919090909090"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Employee Data updated Successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Employee"
+                ],
+                "description": "Remove Employee",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "employeeId",
+                        "in": "path",
+                        "description": "ID of Employee that needs to be delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Employeee deleted successfully"
+                    },
+                    "424": {
+                        "description": "Employeee not deleted, Remove assignment from parking lot first"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/employee/details": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "description": "Get Specific Employee, After Login",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Employeee Data Found successfully"
+                    },
+                    "403": {
+                        "description": "Employee Removed By Admin(Contact Admin to Reactive)"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/user/menu": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Get Menu for User, After Login",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Menu Data Found successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/parkingLot": {
+            "post": {
+                "tags": [
+                    "Parking Lot"
+                ],
+                "description": "Add new Parking Area (Form-Data)",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "camIp",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "employeeIds",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "floorName",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "lotNumber",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "parkingImages",
+                        "in": "formData",
+                        "type": "file",
+                        "required": true
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Lot Created Successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Parking Lot"
+                ],
+                "description": "Get List of Parking Lot",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Parking Lots"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/parkingLot/{parkingLotId}": {
+            "patch": {
+                "tags": [
+                    "Parking Lot"
+                ],
+                "description": "Update Parking Area (Form-Data)",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "description": "ID of lot that needs to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "camIp",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "employeeIds",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "floorName",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "lotNumber",
+                        "in": "formData",
+                        "type": "string",
+                        "uniqueItems": true,
+                        "required": true
+                    },
+                    {
+                        "name": "parkingImages",
+                        "in": "formData",
+                        "type": "file",
+                        "required": true
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lot Updated Successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Parking Lot"
+                ],
+                "description": "Remove Parking Lot",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "description": "ID of lot that needs to be delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Parking lot deleted successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/parkingLot/image/{parkingLotId}": {
+            "delete": {
+                "tags": [
+                    "Parking Lot"
+                ],
+                "description": "Remove Parking Area Image",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "parkingLotId",
+                        "in": "path",
+                        "description": "ID of lot that needs to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "imageName",
+                        "in": "body",
+                        "description": "image path to delete",
+                        "required": true,
+                        "type": "string",
+                        "schema": {
+                            "required": [
+                                "imageName"
+                            ],
+                            "properties": {
+                                "imageName": {
+                                    "type": "string",
+                                    "uniqueItems": true
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Image File Deleted Successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/floor": {
+            "post": {
+                "tags": [
+                    "Floor"
+                ],
+                "description": "Add new floor Area",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "Floor",
+                        "in": "body",
+                        "description": "Floor that we want to create",
+                        "schema": {
+                            "required": [
+                                "name"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Floor 1"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Floor Created Successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Floor"
+                ],
+                "description": "Get List of Floor",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Floor"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/floor/{floorId}": {
+            "patch": {
+                "tags": [
+                    "Floor"
+                ],
+                "description": "Update Floor Area",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "floorId",
+                        "in": "path",
+                        "description": "ID of floor that needs to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Floor",
+                        "in": "body",
+                        "description": "Floor that we want to create",
+                        "schema": {
+                            "required": [
+                                "name"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Floor 101"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Floor Updated Successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Floor"
+                ],
+                "description": "Remove Floor",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "floorId",
+                        "in": "path",
+                        "description": "ID of floor that needs to be delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Floor deleted successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/service": {
+            "post": {
+                "tags": [
+                    "Service"
+                ],
+                "description": "Add new Service",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "Service",
+                        "in": "body",
+                        "description": "Service that we want to create",
+                        "schema": {
+                            "required": [
+                                "name",
+                                "serviceNumber",
+                                "description"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Service 1"
+                                },
+                                "serviceNumber": {
+                                    "type": "number",
+                                    "example" : 101
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example" : "Service Description"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Service Created Successfully"
+                    },
+                    "409": {
+                        "description": "Service Already Exist!, please reactivate it"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Service"
+                ],
+                "description": "Get List of Service",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Service"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/service/{serviceId}": {
+            "patch": {
+                "tags": [
+                    "Service"
+                ],
+                "description": "Update Service",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "serviceId",
+                        "in": "path",
+                        "description": "ID of service that needs to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Service",
+                        "in": "body",
+                        "description": "Service that we want to create",
+                        "schema": {
+                            "required": [
+                                "name",
+                                "serviceNumber",
+                                "description"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Service 101"
+                                },
+                                "serviceNumber": {
+                                    "type": "number",
+                                    "example" : 101
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example" : "Service Description Update"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Service Updated Successfully"
+                    },
+                    "409": {
+                        "description": "Service with same number already exist!"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Service"
+                ],
+                "description": "Remove Service",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "serviceId",
+                        "in": "path",
+                        "description": "ID of service that needs to be delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "service deleted successfully"
+                    },
+                    "424": {
+                        "description": "service not deleted, Remove assignment from package first"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/package": {
+            "post": {
+                "tags": [
+                    "Package"
+                ],
+                "description": "Add new package",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "Package",
+                        "in": "body",
+                        "description": "Package that we want to create",
+                        "schema": {
+                            "required": [
+                                "name",
+                                "packageNumber",
+                                "includedServiceIds",
+                                "description",
+                                "subscriptionPeriod"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Package 1"
+                                },
+                                "packageNumber": {
+                                    "type": "number",
+                                    "example" : 101
+                                },
+                                "includedServiceIds": {
+                                    "type": "string",
+                                    "example" : "123432424"
+                                },
+                                "subscriptionPeriod": {
+                                    "type": "string",
+                                    "description": "Send Seconds Here",
+                                    "example" : "3600"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example" : "Package Description"
+                                    
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Package Created Successfully"
+                    },
+                    "409": {
+                        "description": "Package Already Exist!, please reactivate it"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Package"
+                ],
+                "description": "Get List of Package",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Package"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/package/{packageId}": {
+            "patch": {
+                "tags": [
+                    "Package"
+                ],
+                "description": "Update Package Data!",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "packageId",
+                        "in": "path",
+                        "description": "ID of Package that needs to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Package",
+                        "in": "body",
+                        "description": "Package that we want to create",
+                        "schema": {
+                            "required": [
+                                "name",
+                                "packageNumber",
+                                "includedServiceIds",
+                                "description",
+                                "subscriptionPeriod"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Package 101"
+                                },
+                                "packageNumber": {
+                                    "type": "number",
+                                    "example" : 101
+                                },
+                                "includedServiceIds": {
+                                    "type": "string",
+                                    "example" : "1233543545"
+                                },
+                                "subscriptionPeriod": {
+                                    "type": "number",
+                                    "example" : "6200"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example" : "Package Description Update"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Package Updated Successfully"
+                    },
+                    "409": {
+                        "description": "Package with same number already exist!"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Package"
+                ],
+                "description": "Remove Package",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "packageId",
+                        "in": "path",
+                        "description": "ID of package that needs to be delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "package deleted successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/customer": {
+            "post": {
+                "tags": [
+                    "Customer"
+                ],
+                "description": "Create New Customer Login",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "Customer",
+                        "in": "body",
+                        "description": "User that we want to create",
+                        "schema": {
+                            "required": [
+                                "email",
+                                "password",
+                                "role",
+                                "name",
+                                "mobileNumber"
+                            ],
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "customer1@mt.com"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "uniqueItems": true,
+                                    "example" : "U2FsdGVkX1+ZkeYjYVaeAISWpDjmvuD4HKRf996jWvU="
+                                },
+                                "role": {
+                                    "type": "string",
+                                    "example" : "Customer"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Customer 101"
+                                },
+                                "mobileNumber": {
+                                    "type": "string",
+                                    "example" : "+919090909090"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "New Customer Login is created"
+                    },
+                    "409": {
+                        "description": "User Already Exist"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Customer"
+                ],
+                "description": "Get List of Customer",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Customer"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        },
+        "/customer/{customerId}": {
+            "patch": {
+                "tags": [
+                    "Customer"
+                ],
+                "description": "Update Customer Data",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "customerId",
+                        "in": "path",
+                        "description": "ID of customer that needs to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Customer",
+                        "in": "body",
+                        "description": "Customer that we want to update",
+                        "schema": {
+                            "required": [
+                                "name",
+                                "mobileNumber"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example" : "Customer 1"
+                                },
+                                "mobileNumber": {
+                                    "type": "string",
+                                    "example" : "+919090909090"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer Data updated Successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Customer"
+                ],
+                "description": "Remove Customer",
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "customerId",
+                        "in": "path",
+                        "description": "ID of Customer that needs to be delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer deleted successfully"
+                    },
+                    "500": {
+                        "description": "Internal Server Error/Validation Failed"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {},
+    "securityDefinitions": {
+        "JWT": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT #token"
+        }
+    }
+}
